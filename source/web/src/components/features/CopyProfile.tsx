@@ -6,7 +6,8 @@ import { api } from '@/lib/api';
 import { Button } from '../Button';
 import { Input } from '../Input';
 import { Card, CardHeader } from '../Card';
-import type { Profile, ProfileData, RewriteEntry } from '@/lib/types';
+import type { Profile, ProfileData } from '@/lib/types';
+import { reconstructPayload } from '@/lib/types';
 import styles from './CopyProfile.module.scss';
 
 interface CopyResult {
@@ -16,64 +17,6 @@ interface CopyResult {
 }
 
 type DestinationType = 'same' | 'different';
-
-const reconstructPayload = (sourceData: ProfileData): Partial<ProfileData> => {
-  const payload: Partial<ProfileData> = {};
-
-  payload.name = `${sourceData.name} (Copy)`;
-
-  if (sourceData.security) {
-    payload.security = { ...sourceData.security };
-    if (sourceData.security.tlds) {
-      payload.security.tlds = sourceData.security.tlds.map((t) => ({ id: t.id }));
-    }
-  }
-
-  if (sourceData.privacy) {
-    payload.privacy = {
-      disguisedTrackers: sourceData.privacy.disguisedTrackers,
-      allowAffiliate: sourceData.privacy.allowAffiliate,
-      blocklists: (sourceData.privacy.blocklists || []).map((b) => ({ id: b.id })),
-      natives: (sourceData.privacy.natives || []).map((n) => ({ id: n.id })),
-    };
-  }
-
-  if (sourceData.parentalControl) {
-    payload.parentalControl = {
-      safeSearch: sourceData.parentalControl.safeSearch,
-      youtubeRestrictedMode: sourceData.parentalControl.youtubeRestrictedMode,
-      blockBypass: sourceData.parentalControl.blockBypass,
-      services: (sourceData.parentalControl.services || []).map((s) => ({
-        id: s.id,
-        active: s.active,
-      })),
-      categories: (sourceData.parentalControl.categories || []).map((c) => ({
-        id: c.id,
-        active: c.active,
-      })),
-    };
-  }
-
-  if (sourceData.denylist) {
-    payload.denylist = sourceData.denylist.map((d) => ({
-      id: d.id,
-      active: d.active,
-    }));
-  }
-
-  if (sourceData.allowlist) {
-    payload.allowlist = sourceData.allowlist.map((a) => ({
-      id: a.id,
-      active: a.active,
-    }));
-  }
-
-  if (sourceData.settings) {
-    payload.settings = { ...sourceData.settings };
-  }
-
-  return payload;
-};
 
 export function CopyProfile() {
   const { profiles, apiKey } = useAuth();
