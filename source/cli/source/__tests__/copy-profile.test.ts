@@ -136,15 +136,15 @@ function createMockHttpAdapter(): MockHttpAdapter {
 
 describe('reconstructPayload', () => {
   describe('name', () => {
-    test('copies profile name', () => {
+    test('copies profile name with (Copy) suffix', () => {
       const payload = reconstructPayload(SAMPLE_PROFILE_DATA);
-      expect(payload.name).toBe('Test Profile');
+      expect(payload.name).toBe('Test Profile (Copy)');
     });
 
-    test('defaults name when missing', () => {
+    test('defaults name when missing with (Copy) suffix', () => {
       const data = { security: {} } as ProfileData;
       const payload = reconstructPayload(data);
-      expect(payload.name).toBe('Cloned Profile');
+      expect(payload.name).toBe('Cloned Profile (Copy)');
     });
   });
 
@@ -339,7 +339,7 @@ describe('reconstructPayload', () => {
   describe('edge cases', () => {
     test('handles completely empty data', () => {
       const payload = reconstructPayload({} as ProfileData);
-      expect(payload.name).toBe('Cloned Profile');
+      expect(payload.name).toBe('Cloned Profile (Copy)');
       expect(payload.security).toBeUndefined();
       expect(payload.privacy).toBeUndefined();
     });
@@ -368,7 +368,7 @@ describe('reconstructPayload', () => {
       const data = { name: 'Minimal Profile' } as ProfileData;
       const payload = reconstructPayload(data);
 
-      expect(payload.name).toBe('Minimal Profile');
+      expect(payload.name).toBe('Minimal Profile (Copy)');
       expect(payload.security).toBeUndefined();
       expect(payload.privacy).toBeUndefined();
       expect(payload.parentalControl).toBeUndefined();
@@ -452,7 +452,7 @@ describe('reconstructPayload', () => {
     test('roundtrip preserves essential data', () => {
       const payload = reconstructPayload(SAMPLE_PROFILE_DATA);
 
-      expect(payload.name).toBe(SAMPLE_PROFILE_DATA.name);
+      expect(payload.name).toBe(`${SAMPLE_PROFILE_DATA.name} (Copy)`);
       expect(payload.security!.tlds).toHaveLength(SAMPLE_PROFILE_DATA.security!.tlds!.length);
       expect(payload.privacy!.blocklists).toHaveLength(SAMPLE_PROFILE_DATA.privacy!.blocklists!.length);
       expect(payload.denylist).toHaveLength(SAMPLE_PROFILE_DATA.denylist!.length);
