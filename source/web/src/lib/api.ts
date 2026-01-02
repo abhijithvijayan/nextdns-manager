@@ -3,12 +3,13 @@
  * Uses the shared core's NextDNSApi with a custom HTTP adapter
  * that routes through the Cloudflare proxy (/api/nextdns)
  */
-import { NextDNSApi, type HttpAdapter } from '@core/index';
+import { NextDNSApi, parseApiResponse, type HttpAdapter } from '@core/index';
 
 const BASE_URL = '/api/nextdns';
 
 /**
- * HTTP adapter for browser that routes through Cloudflare proxy
+ * HTTP adapter for browser that routes through Cloudflare proxy.
+ * Uses the shared parseApiResponse for consistent error handling.
  */
 const proxyHttpAdapter: HttpAdapter = {
   async request<T>(
@@ -25,21 +26,8 @@ const proxyHttpAdapter: HttpAdapter = {
       body: options.body,
     });
 
-    if (response.status === 204) {
-      return { status: 204, data: {} as T };
-    }
-
     const text = await response.text();
-    const data = text ? JSON.parse(text) : {};
-
-    if (!response.ok) {
-      const errorData = data as { errors?: { message?: string; code?: string }[] };
-      const errorMessage =
-        errorData.errors?.[0]?.message || errorData.errors?.[0]?.code || 'Request failed';
-      throw new Error(errorMessage);
-    }
-
-    return { status: response.status, data };
+    return parseApiResponse<T>(response.ok, response.status, text);
   },
 };
 

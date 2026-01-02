@@ -161,7 +161,9 @@ export function validateApiSchema(sourceData: ProfileData): string[] {
 export function reconstructPayload(sourceData: ProfileData): Partial<ProfileData> {
   const payload: Partial<ProfileData> = {};
 
-  payload.name = sourceData.name || 'Cloned Profile';
+  // Append " (Copy)" to avoid duplicate name errors
+  const baseName = sourceData.name || 'Cloned Profile';
+  payload.name = `${baseName} (Copy)`;
 
   if (sourceData.security) {
     const sec = sourceData.security;

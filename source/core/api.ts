@@ -28,6 +28,33 @@ export interface HttpAdapter {
   ): Promise<{ status: number; data: T }>;
 }
 
+/**
+ * Parse and validate NextDNS API response.
+ * Handles the quirk where NextDNS returns HTTP 200 with errors in the body.
+ * Export this so custom HTTP adapters (like the web proxy) can reuse it.
+ */
+export function parseApiResponse<T>(
+  responseOk: boolean,
+  status: number,
+  text: string
+): { status: number; data: T } {
+  if (status === 204) {
+    return { status: 204, data: {} as T };
+  }
+
+  const data = text ? JSON.parse(text) : {};
+
+  // Check for errors - NextDNS API may return 200 with errors in body
+  const errorData = data as { errors?: { message?: string; code?: string }[] };
+  if (!responseOk || (errorData.errors && errorData.errors.length > 0)) {
+    const errorMessage =
+      errorData.errors?.[0]?.message || errorData.errors?.[0]?.code || 'Request failed';
+    throw new Error(errorMessage);
+  }
+
+  return { status, data };
+}
+
 // Default HTTP adapter using fetch (works in Node 18+ and browsers)
 const defaultHttpAdapter: HttpAdapter = {
   async request<T>(
@@ -40,21 +67,8 @@ const defaultHttpAdapter: HttpAdapter = {
       body: options.body,
     });
 
-    if (response.status === 204) {
-      return { status: 204, data: {} as T };
-    }
-
     const text = await response.text();
-    const data = text ? JSON.parse(text) : {};
-
-    if (!response.ok) {
-      const errorData = data as { errors?: { message?: string; code?: string }[] };
-      const errorMessage =
-        errorData.errors?.[0]?.message || errorData.errors?.[0]?.code || 'Request failed';
-      throw new Error(errorMessage);
-    }
-
-    return { status: response.status, data };
+    return parseApiResponse<T>(response.ok, response.status, text);
   },
 };
 

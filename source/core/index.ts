@@ -7,7 +7,7 @@
 export * from './types.js';
 
 // API Client
-export { NextDNSApi, api } from './api.js';
+export { NextDNSApi, api, parseApiResponse } from './api.js';
 export type { ApiClientOptions, HttpAdapter } from './api.js';
 
 // Manage Domain
