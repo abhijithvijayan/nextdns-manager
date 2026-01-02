@@ -62,11 +62,11 @@
 }
 
 .selectAllButton {
-  background: none;
-  border: none;
-  color: var(--color-primary);
   font-size: 13px;
   font-weight: 500;
+  color: var(--color-primary);
+  background: none;
+  border: none;
   cursor: pointer;
   padding: 4px 8px;
   border-radius: var(--radius);
