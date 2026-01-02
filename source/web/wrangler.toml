@@ -1,0 +1,12 @@
+name = "nextdns-manager"
+main = "worker/index.ts"
+compatibility_date = "2025-11-18"
+
+[build]
+command = "npx next telemetry disable && npm run build"
+
+[assets]
+directory = "./out"
+
+[observability]
+enabled = false

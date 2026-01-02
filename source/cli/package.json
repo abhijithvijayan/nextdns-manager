@@ -1,0 +1,49 @@
+{
+  "name": "@nextdns-manager/cli",
+  "version": "1.0.0",
+  "description": "CLI tool for managing NextDNS profiles",
+  "license": "MIT",
+  "repository": "https://github.com/abhijithvijayan/nextdns-manager.git",
+  "author": {
+    "name": "abhijithvijayan",
+    "email": "email@abhijithvijayan.in",
+    "url": "https://abhijithvijayan.in"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "module",
+  "exports": {
+    "types": "./dist/cli/source/index.d.ts",
+    "default": "./dist/cli/source/index.js"
+  },
+  "bin": {
+    "nextdns": "./dist/cli/source/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsx source/index.ts",
+    "build": "tsc",
+    "start": "node dist/cli/source/index.js",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "tsx": "^4.7.0",
+    "typescript": "^5"
+  },
+  "keywords": [
+    "nextdns",
+    "dns",
+    "cli"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@nextdns-manager/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "lint": "eslint",
+    "deploy": "wrangler deploy",
+    "cf:dev": "wrangler dev"
+  },
+  "dependencies": {
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "sass": "^1.97.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "typescript": "^5",
+    "wrangler": "^4.0.0"
+  }
+}
