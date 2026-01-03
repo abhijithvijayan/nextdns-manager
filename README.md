@@ -74,7 +74,7 @@ npx nextdns-manager-cli <command> [options]
 Add, remove, enable, or disable a domain in the allowlist or denylist across all profiles.
 
 ```sh
-nextdns manage -k <API_KEY> -d <DOMAIN> -l <LIST> [-a <ACTION>] [-p <PROFILES>]
+nextdns-manager manage -k <API_KEY> -d <DOMAIN> -l <LIST> [-a <ACTION>] [-p <PROFILES>]
 ```
 
 #### Arguments
@@ -91,22 +91,22 @@ nextdns manage -k <API_KEY> -d <DOMAIN> -l <LIST> [-a <ACTION>] [-p <PROFILES>]
 
 ```sh
 # Add domain to denylist across all profiles
-nextdns manage -k "your-api-key" -d "malware.com" -l denylist
+nextdns-manager manage -k "your-api-key" -d "malware.com" -l denylist
 
 # Add domain to allowlist
-nextdns manage -k "your-api-key" -d "trusted.com" -l allowlist
+nextdns-manager manage -k "your-api-key" -d "trusted.com" -l allowlist
 
 # Disable a domain (keep it but inactive)
-nextdns manage -k "your-api-key" -d "example.com" -l denylist -a disable
+nextdns-manager manage -k "your-api-key" -d "example.com" -l denylist -a disable
 
 # Enable a previously disabled domain
-nextdns manage -k "your-api-key" -d "example.com" -l denylist -a enable
+nextdns-manager manage -k "your-api-key" -d "example.com" -l denylist -a enable
 
 # Remove a domain
-nextdns manage -k "your-api-key" -d "example.com" -l denylist -a remove
+nextdns-manager manage -k "your-api-key" -d "example.com" -l denylist -a remove
 
 # Target specific profiles only
-nextdns manage -k "your-api-key" -d "example.com" -l denylist -p abc123 def456
+nextdns-manager manage -k "your-api-key" -d "example.com" -l denylist -p abc123 def456
 ```
 
 ### Sync Lists
@@ -114,7 +114,7 @@ nextdns manage -k "your-api-key" -d "example.com" -l denylist -p abc123 def456
 Synchronize denylist and allowlist domains across all NextDNS profiles using majority voting.
 
 ```sh
-nextdns sync -k <API_KEY> [-l <LIST>] [-p <PROFILES>] [--dry-run]
+nextdns-manager sync -k <API_KEY> [-l <LIST>] [-p <PROFILES>] [--dry-run]
 ```
 
 #### Arguments
@@ -137,16 +137,16 @@ nextdns sync -k <API_KEY> [-l <LIST>] [-p <PROFILES>] [--dry-run]
 
 ```sh
 # Sync both lists across all profiles
-nextdns sync -k "your-api-key"
+nextdns-manager sync -k "your-api-key"
 
 # Preview changes without applying (dry run)
-nextdns sync -k "your-api-key" --dry-run
+nextdns-manager sync -k "your-api-key" --dry-run
 
 # Sync only denylist
-nextdns sync -k "your-api-key" -l denylist
+nextdns-manager sync -k "your-api-key" -l denylist
 
 # Sync specific profiles only
-nextdns sync -k "your-api-key" -p abc123 def456
+nextdns-manager sync -k "your-api-key" -p abc123 def456
 ```
 
 ### Diff Profiles
@@ -154,7 +154,7 @@ nextdns sync -k "your-api-key" -p abc123 def456
 Visualize differences between NextDNS profiles in a table format.
 
 ```sh
-nextdns diff -k <API_KEY> [-p <PROFILES>] [-s <SECTION>] [--diff-only]
+nextdns-manager diff -k <API_KEY> [-p <PROFILES>] [-s <SECTION>] [--diff-only]
 ```
 
 #### Arguments
@@ -170,16 +170,16 @@ nextdns diff -k <API_KEY> [-p <PROFILES>] [-s <SECTION>] [--diff-only]
 
 ```sh
 # Compare all profiles across all sections
-nextdns diff -k "your-api-key"
+nextdns-manager diff -k "your-api-key"
 
 # Show only differences
-nextdns diff -k "your-api-key" --diff-only
+nextdns-manager diff -k "your-api-key" --diff-only
 
 # Compare only security settings
-nextdns diff -k "your-api-key" -s security
+nextdns-manager diff -k "your-api-key" -s security
 
 # Compare specific profiles
-nextdns diff -k "your-api-key" -p abc123 def456
+nextdns-manager diff -k "your-api-key" -p abc123 def456
 ```
 
 ### Copy Profile
@@ -187,7 +187,7 @@ nextdns diff -k "your-api-key" -p abc123 def456
 Clone an entire NextDNS profile to a new profile.
 
 ```sh
-nextdns copy -s <SOURCE_API_KEY> -d <DEST_API_KEY> -p <PROFILE_ID> [-f]
+nextdns-manager copy -s <SOURCE_API_KEY> -d <DEST_API_KEY> -p <PROFILE_ID> [-f]
 ```
 
 #### Arguments
@@ -202,7 +202,7 @@ nextdns copy -s <SOURCE_API_KEY> -d <DEST_API_KEY> -p <PROFILE_ID> [-f]
 #### Example
 
 ```sh
-nextdns copy -s "source-api-key" -d "dest-api-key" -p "a1b2c3"
+nextdns-manager copy -s "source-api-key" -d "dest-api-key" -p "a1b2c3"
 ```
 
 ### Getting Your API Key

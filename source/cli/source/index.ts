@@ -13,7 +13,7 @@ import { copyCommand } from './commands/copy.js';
 const program = new Command();
 
 program
-  .name('nextdns')
+  .name('nextdns-manager')
   .description('CLI tool for managing NextDNS profiles')
   .version('1.0.0');
 

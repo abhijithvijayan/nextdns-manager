@@ -18,7 +18,7 @@
     "default": "./dist/cli/source/index.js"
   },
   "bin": {
-    "nextdns": "./dist/cli/source/index.js"
+    "nextdns-manager": "./dist/cli/source/index.js"
   },
   "files": [
     "dist"
