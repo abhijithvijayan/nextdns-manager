@@ -21,15 +21,18 @@
     "nextdns-manager": "./dist/cli/source/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "dev": "tsx source/index.ts",
-    "build": "tsc",
+    "build": "rm -rf dist && tsc",
     "start": "node dist/cli/source/index.js",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:watch": "NODE_OPTIONS='--experimental-vm-modules' jest --watch",
     "pack:list": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz",
+    "prepack": "cp ../../README.md .",
+    "postpack": "rm README.md",
     "prepublishOnly": "npm run pack:list"
   },
   "dependencies": {
