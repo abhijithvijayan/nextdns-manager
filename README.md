@@ -249,16 +249,27 @@ See the [Web App README](source/web/README.md) for detailed setup, deployment (C
 | `threatIntelligenceFeeds` | Threat Intelligence Feeds |
 | `aiThreatDetection` | AI-Driven Threat Detection |
 | `googleSafeBrowsing` | Google Safe Browsing |
-| `cryptojacking` | Cryptojacking Protection |
-| `dnsRebinding` | DNS Rebinding Protection |
-| `idnHomographs` | IDN Homograph Attacks Protection |
-| `typosquatting` | Typosquatting Protection |
-| `dga` | Domain Generation Algorithms (DGAs) Protection |
-| `nrd` | Block Newly Registered Domains (NRDs) |
-| `ddns` | Block Dynamic DNS Hostnames |
-| `parking` | Block Parked Domains |
-| `csam` | Block Child Sexual Abuse Material |
-| `tlds` | Block Top-Level Domains (TLDs) |
+| `nrd` | Newly Registered Domains |
+| `newlyActiveDomains` | Newly Active Domains |
+| `algorithmicallyGeneratedDomains` | Algorithmically Generated Domains |
+| `freeHostingDomains` | Free Hosting Domains |
+| `ddns` | Dynamic DNS Hostnames |
+| `tunnelingEndpoints` | Tunneling Endpoints |
+| `residentialHosting` | Residential Hosting |
+| `untrustedCertificates` | Untrusted Certificates |
+| `dataDropServices` | Data Drop Services |
+| `fastFluxNetworks` | Fast Flux Networks (API only) |
+| `dnsDataExfiltration` | DNS Data Exfiltration (API only) |
+| `dnsPayloadDelivery` | DNS Payload Delivery |
+| `dnsRebinding` | Local Network Addresses (DNS Rebinding) |
+| `cryptojacking` | Cryptocurrency Mining |
+| `decentralizedWebGateways` | Decentralized Web Gateways |
+| `parking` | Parked Domains |
+| `highRiskTlds` | High-Risk TLDs |
+| `csam` | Child Sexual Abuse Material (CSAM) |
+| `tlds` | Top-Level Domains (TLDs) |
+
+`idnHomographs`, `typosquatting` and `dga` are deprecated by NextDNS: they are still sent for backward compatibility, but the API ignores them on writes and always returns `false`, so they are hidden from diffs.
 
 ### Privacy
 
@@ -266,8 +277,9 @@ See the [Web App README](source/web/README.md) for detailed setup, deployment (C
 |-----------|-----------------|
 | `blocklists` | Blocklists (NextDNS, Steven Black, AdGuard, OISD, etc.) |
 | `natives` | Native Tracking Protection (Windows, Apple, Samsung, etc.) |
+| `rotatingAdDomains` | Block Rotating Ad Domains |
 | `disguisedTrackers` | Block Disguised Third-Party Trackers |
-| `allowAffiliate` | Allow Affiliate & Tracking Links |
+| `allowAffiliate` | Allow Tracking Links |
 
 ### Parental Control
 

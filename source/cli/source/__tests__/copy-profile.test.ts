@@ -184,11 +184,54 @@ describe('reconstructPayload', () => {
     });
 
     test('defaults to true when fields are missing', () => {
-      const data = {security: {threatIntelligenceFeeds: false}} as ProfileData;
+      const data = {
+        security: {threatIntelligenceFeeds: false},
+      } as ProfileData;
       const payload = reconstructPayload(data);
 
       expect(payload.security!.threatIntelligenceFeeds).toBe(false);
       expect(payload.security!.aiThreatDetection).toBe(true); // default
+    });
+
+    test('copies newer security toggles when the source returns them', () => {
+      const data = {
+        security: {
+          ...SAMPLE_PROFILE_DATA.security!,
+          newlyActiveDomains: true,
+          algorithmicallyGeneratedDomains: false,
+          freeHostingDomains: true,
+          tunnelingEndpoints: false,
+          dataDropServices: true,
+          residentialHosting: false,
+          untrustedCertificates: true,
+          fastFluxNetworks: false,
+          dnsDataExfiltration: true,
+          dnsPayloadDelivery: false,
+          decentralizedWebGateways: true,
+          highRiskTlds: false,
+        },
+      } as ProfileData;
+      const security = reconstructPayload(data).security!;
+
+      expect(security.newlyActiveDomains).toBe(true);
+      expect(security.algorithmicallyGeneratedDomains).toBe(false);
+      expect(security.freeHostingDomains).toBe(true);
+      expect(security.tunnelingEndpoints).toBe(false);
+      expect(security.dataDropServices).toBe(true);
+      expect(security.residentialHosting).toBe(false);
+      expect(security.untrustedCertificates).toBe(true);
+      expect(security.fastFluxNetworks).toBe(false);
+      expect(security.dnsDataExfiltration).toBe(true);
+      expect(security.dnsPayloadDelivery).toBe(false);
+      expect(security.decentralizedWebGateways).toBe(true);
+      expect(security.highRiskTlds).toBe(false);
+    });
+
+    test('omits newer security toggles the source does not return', () => {
+      const security = reconstructPayload(SAMPLE_PROFILE_DATA).security!;
+
+      expect(security).not.toHaveProperty('newlyActiveDomains');
+      expect(security).not.toHaveProperty('highRiskTlds');
     });
   });
 
@@ -199,6 +242,17 @@ describe('reconstructPayload', () => {
 
       expect(privacy.disguisedTrackers).toBe(true);
       expect(privacy.allowAffiliate).toBe(true);
+    });
+
+    test('copies rotatingAdDomains only when the source returns it', () => {
+      const data = {
+        privacy: {...SAMPLE_PROFILE_DATA.privacy!, rotatingAdDomains: false},
+      } as ProfileData;
+
+      expect(reconstructPayload(data).privacy!.rotatingAdDomains).toBe(false);
+      expect(
+        reconstructPayload(SAMPLE_PROFILE_DATA).privacy
+      ).not.toHaveProperty('rotatingAdDomains');
     });
 
     test('copies blocklists with only id field', () => {
@@ -507,6 +561,30 @@ describe('validateApiSchema', () => {
     expect(warnings).toHaveLength(0);
   });
 
+  test('no warnings for newer security and privacy toggles', () => {
+    const data = {
+      ...SAMPLE_PROFILE_DATA,
+      security: {
+        ...SAMPLE_PROFILE_DATA.security!,
+        newlyActiveDomains: true,
+        algorithmicallyGeneratedDomains: true,
+        freeHostingDomains: true,
+        tunnelingEndpoints: true,
+        dataDropServices: true,
+        residentialHosting: true,
+        untrustedCertificates: true,
+        fastFluxNetworks: true,
+        dnsDataExfiltration: true,
+        dnsPayloadDelivery: true,
+        decentralizedWebGateways: true,
+        highRiskTlds: true,
+      },
+      privacy: {...SAMPLE_PROFILE_DATA.privacy!, rotatingAdDomains: true},
+    } as ProfileData;
+
+    expect(validateApiSchema(data)).toEqual([]);
+  });
+
   test('warns on unknown root field', () => {
     const data = {
       ...SAMPLE_PROFILE_DATA,
@@ -561,7 +639,10 @@ describe('validateApiSchema', () => {
   test('warns on unknown settings field', () => {
     const data = {
       ...SAMPLE_PROFILE_DATA,
-      settings: {...SAMPLE_PROFILE_DATA.settings, newSetting: {enabled: true}},
+      settings: {
+        ...SAMPLE_PROFILE_DATA.settings,
+        newSetting: {enabled: true},
+      },
     } as unknown as ProfileData;
     const warnings = validateApiSchema(data);
 
@@ -723,7 +804,9 @@ describe('copyProfile', () => {
       if (url.includes('/profiles/abc123') && !url.includes('/rewrites')) {
         return {
           status: 200,
-          data: {data: {...SAMPLE_PROFILE_DATA, parentalControl: undefined}},
+          data: {
+            data: {...SAMPLE_PROFILE_DATA, parentalControl: undefined},
+          },
         };
       }
       if (options.method === 'POST') {

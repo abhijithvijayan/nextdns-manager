@@ -3,6 +3,7 @@
 import {useState, useCallback} from 'react';
 import {useAuth} from '@/contexts/AuthContext';
 import {api} from '@/lib/api';
+import {SECURITY_DIFF_FIELDS, PRIVACY_TOGGLE_FIELDS} from '@core/types';
 import {Button} from '../Button';
 import {Card, CardHeader} from '../Card';
 import styles from './DiffProfiles.module.scss';
@@ -408,30 +409,14 @@ export function DiffProfiles() {
         {(section === 'all' || section === 'security') &&
           renderTable(
             'Security Settings',
-            compareSettings('security', [
-              'threatIntelligenceFeeds',
-              'aiThreatDetection',
-              'googleSafeBrowsing',
-              'cryptojacking',
-              'dnsRebinding',
-              'idnHomographs',
-              'typosquatting',
-              'dga',
-              'nrd',
-              'ddns',
-              'parking',
-              'csam',
-            ])
+            compareSettings('security', [...SECURITY_DIFF_FIELDS])
           )}
 
         {(section === 'all' || section === 'privacy') && (
           <>
             {renderTable(
               'Privacy Settings',
-              compareSettings('privacy', [
-                'disguisedTrackers',
-                'allowAffiliate',
-              ])
+              compareSettings('privacy', [...PRIVACY_TOGGLE_FIELDS])
             )}
             {renderTable(
               'Blocklists',

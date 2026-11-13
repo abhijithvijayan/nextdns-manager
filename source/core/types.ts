@@ -56,6 +56,18 @@ export interface ProfileSecurity {
   ddns: boolean;
   parking: boolean;
   csam: boolean;
+  newlyActiveDomains?: boolean;
+  algorithmicallyGeneratedDomains?: boolean;
+  freeHostingDomains?: boolean;
+  tunnelingEndpoints?: boolean;
+  dataDropServices?: boolean;
+  residentialHosting?: boolean;
+  untrustedCertificates?: boolean;
+  fastFluxNetworks?: boolean;
+  dnsDataExfiltration?: boolean;
+  dnsPayloadDelivery?: boolean;
+  decentralizedWebGateways?: boolean;
+  highRiskTlds?: boolean;
   tlds?: TldEntry[];
 }
 
@@ -63,6 +75,7 @@ export interface ProfilePrivacy {
   blocklists?: BlocklistEntry[];
   natives?: NativeEntry[];
   disguisedTrackers: boolean;
+  rotatingAdDomains?: boolean;
   allowAffiliate: boolean;
 }
 
@@ -155,9 +168,100 @@ export interface DiffSection {
   legend?: string;
 }
 
-// Known fields for schema validation (from Python)
+/**
+ * Boolean security toggles that have always been part of the API.
+ * Copy falls back to a default when the source omits one of these.
+ */
+export const LEGACY_SECURITY_TOGGLE_FIELDS = [
+  'threatIntelligenceFeeds',
+  'aiThreatDetection',
+  'googleSafeBrowsing',
+  'cryptojacking',
+  'dnsRebinding',
+  'idnHomographs',
+  'typosquatting',
+  'dga',
+  'nrd',
+  'ddns',
+  'parking',
+  'csam',
+] as const;
+
+/**
+ * Boolean security toggles added later by NextDNS.
+ * Copied only when the source profile actually returns them.
+ */
+export const NEW_SECURITY_TOGGLE_FIELDS = [
+  'newlyActiveDomains',
+  'algorithmicallyGeneratedDomains',
+  'freeHostingDomains',
+  'tunnelingEndpoints',
+  'dataDropServices',
+  'residentialHosting',
+  'untrustedCertificates',
+  'fastFluxNetworks',
+  'dnsDataExfiltration',
+  'dnsPayloadDelivery',
+  'decentralizedWebGateways',
+  'highRiskTlds',
+] as const;
+
+/**
+ * Deprecated by NextDNS: still accepted, but always read back as false and
+ * ignored on writes. Kept in copy payloads, hidden from diffs.
+ */
+export const DEPRECATED_SECURITY_FIELDS = [
+  'idnHomographs',
+  'typosquatting',
+  'dga',
+] as const;
+
+export const SECURITY_TOGGLE_FIELDS = [
+  ...LEGACY_SECURITY_TOGGLE_FIELDS,
+  ...NEW_SECURITY_TOGGLE_FIELDS,
+] as const;
+
+/** Security toggles worth showing when comparing profiles, in dashboard order. */
+export const SECURITY_DIFF_FIELDS = [
+  'threatIntelligenceFeeds',
+  'aiThreatDetection',
+  'googleSafeBrowsing',
+  'nrd',
+  'newlyActiveDomains',
+  'algorithmicallyGeneratedDomains',
+  'freeHostingDomains',
+  'ddns',
+  'tunnelingEndpoints',
+  'residentialHosting',
+  'untrustedCertificates',
+  'dataDropServices',
+  'fastFluxNetworks',
+  'dnsDataExfiltration',
+  'dnsPayloadDelivery',
+  'dnsRebinding',
+  'cryptojacking',
+  'decentralizedWebGateways',
+  'parking',
+  'highRiskTlds',
+  'csam',
+] as const;
+
+export const LEGACY_PRIVACY_TOGGLE_FIELDS = [
+  'disguisedTrackers',
+  'allowAffiliate',
+] as const;
+
+export const NEW_PRIVACY_TOGGLE_FIELDS = ['rotatingAdDomains'] as const;
+
+export const PRIVACY_TOGGLE_FIELDS = [
+  'disguisedTrackers',
+  'rotatingAdDomains',
+  'allowAffiliate',
+] as const;
+
+// Known fields for schema validation
 export const KNOWN_FIELDS = {
-  root: new Set([
+  root: new Set<string>([
     'id',
     'fingerprint',
     'name',
@@ -170,28 +274,9 @@ export const KNOWN_FIELDS = {
     'settings',
     'rewrites',
   ]),
-  security: new Set([
-    'threatIntelligenceFeeds',
-    'aiThreatDetection',
-    'googleSafeBrowsing',
-    'cryptojacking',
-    'dnsRebinding',
-    'idnHomographs',
-    'typosquatting',
-    'dga',
-    'nrd',
-    'ddns',
-    'parking',
-    'csam',
-    'tlds',
-  ]),
-  privacy: new Set([
-    'disguisedTrackers',
-    'allowAffiliate',
-    'blocklists',
-    'natives',
-  ]),
-  parentalControl: new Set([
+  security: new Set<string>([...SECURITY_TOGGLE_FIELDS, 'tlds']),
+  privacy: new Set<string>([...PRIVACY_TOGGLE_FIELDS, 'blocklists', 'natives']),
+  parentalControl: new Set<string>([
     'safeSearch',
     'youtubeRestrictedMode',
     'blockBypass',
@@ -199,12 +284,27 @@ export const KNOWN_FIELDS = {
     'categories',
     'recreation',
   ]),
-  settings: new Set(['logs', 'blockPage', 'performance', 'web3', 'bav']),
-  'settings.logs': new Set(['enabled', 'drop', 'retention', 'location']),
-  'settings.performance': new Set(['ecs', 'cacheBoost', 'cnameFlattening']),
-} as const;
+  settings: new Set<string>([
+    'logs',
+    'blockPage',
+    'performance',
+    'web3',
+    'bav',
+  ]),
+  'settings.logs': new Set<string>([
+    'enabled',
+    'drop',
+    'retention',
+    'location',
+  ]),
+  'settings.performance': new Set<string>([
+    'ecs',
+    'cacheBoost',
+    'cnameFlattening',
+  ]),
+};
 
 export const SKIPPED_FIELDS = {
-  root: new Set(['id', 'fingerprint', 'setup']),
-  parentalControl: new Set(['recreation']),
-} as const;
+  root: new Set<string>(['id', 'fingerprint', 'setup']),
+  parentalControl: new Set<string>(['recreation']),
+};

@@ -7,6 +7,7 @@
 
 import type {NextDNSApi} from './api.js';
 import type {Profile, ListType} from './types.js';
+import {SECURITY_DIFF_FIELDS, PRIVACY_TOGGLE_FIELDS} from './types.js';
 
 const sleep = (ms: number): Promise<unknown> =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -387,20 +388,7 @@ function generateDiffTables(
 
   // Security settings
   if (section === 'all' || section === 'security') {
-    const securityFields = [
-      'threatIntelligenceFeeds',
-      'aiThreatDetection',
-      'googleSafeBrowsing',
-      'cryptojacking',
-      'dnsRebinding',
-      'idnHomographs',
-      'typosquatting',
-      'dga',
-      'nrd',
-      'ddns',
-      'parking',
-      'csam',
-    ];
+    const securityFields = [...SECURITY_DIFF_FIELDS];
     const rows = compareSettings(allData, 'security', securityFields);
     const table = createTable('Security Settings', rows);
     if (table) tables.push(table);
@@ -408,7 +396,7 @@ function generateDiffTables(
 
   // Privacy settings
   if (section === 'all' || section === 'privacy') {
-    const privacyFields = ['disguisedTrackers', 'allowAffiliate'];
+    const privacyFields = [...PRIVACY_TOGGLE_FIELDS];
     let rows = compareSettings(allData, 'privacy', privacyFields);
     let table = createTable('Privacy Settings', rows);
     if (table) tables.push(table);

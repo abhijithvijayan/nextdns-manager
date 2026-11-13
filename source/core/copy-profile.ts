@@ -21,8 +21,17 @@ import type {
   DomainEntry,
 } from './types.js';
 
+import {
+  KNOWN_FIELDS,
+  SKIPPED_FIELDS,
+  SECURITY_TOGGLE_FIELDS,
+  NEW_SECURITY_TOGGLE_FIELDS,
+  PRIVACY_TOGGLE_FIELDS,
+  NEW_PRIVACY_TOGGLE_FIELDS,
+} from './types.js';
+
 // Re-export for convenience
-export {KNOWN_FIELDS, SKIPPED_FIELDS} from './types.js';
+export {KNOWN_FIELDS, SKIPPED_FIELDS};
 
 export interface CopyProfileOptions {
   sourceApiKey: string;
@@ -57,59 +66,6 @@ export interface CopyResult {
  */
 export function validateApiSchema(sourceData: ProfileData): string[] {
   const warnings: string[] = [];
-
-  const KNOWN_FIELDS = {
-    root: new Set([
-      'id',
-      'fingerprint',
-      'name',
-      'setup',
-      'security',
-      'privacy',
-      'parentalControl',
-      'denylist',
-      'allowlist',
-      'settings',
-      'rewrites',
-    ]),
-    security: new Set([
-      'threatIntelligenceFeeds',
-      'aiThreatDetection',
-      'googleSafeBrowsing',
-      'cryptojacking',
-      'dnsRebinding',
-      'idnHomographs',
-      'typosquatting',
-      'dga',
-      'nrd',
-      'ddns',
-      'parking',
-      'csam',
-      'tlds',
-    ]),
-    privacy: new Set([
-      'disguisedTrackers',
-      'allowAffiliate',
-      'blocklists',
-      'natives',
-    ]),
-    parentalControl: new Set([
-      'safeSearch',
-      'youtubeRestrictedMode',
-      'blockBypass',
-      'services',
-      'categories',
-      'recreation',
-    ]),
-    settings: new Set(['logs', 'blockPage', 'performance', 'web3', 'bav']),
-    'settings.logs': new Set(['enabled', 'drop', 'retention', 'location']),
-    'settings.performance': new Set(['ecs', 'cacheBoost', 'cnameFlattening']),
-  };
-
-  const SKIPPED_FIELDS = {
-    root: new Set(['id', 'fingerprint', 'setup']),
-    parentalControl: new Set(['recreation']),
-  };
 
   const checkFields = (
     data: Record<string, unknown>,
@@ -220,6 +176,13 @@ export function reconstructPayload(
       csam: sec.csam ?? true,
     } as ProfileSecurity;
 
+    // Newer toggles: copy only what the source actually returns
+    for (const k of NEW_SECURITY_TOGGLE_FIELDS) {
+      if (typeof sec[k] === 'boolean') {
+        payload.security[k] = sec[k];
+      }
+    }
+
     if (sec.tlds) {
       payload.security.tlds = sec.tlds.map((t: TldEntry) => {
         return {id: t.id};
@@ -233,6 +196,12 @@ export function reconstructPayload(
       disguisedTrackers: priv.disguisedTrackers ?? true,
       allowAffiliate: priv.allowAffiliate ?? true,
     } as ProfilePrivacy;
+
+    for (const k of NEW_PRIVACY_TOGGLE_FIELDS) {
+      if (typeof priv[k] === 'boolean') {
+        payload.privacy[k] = priv[k];
+      }
+    }
 
     if (priv.blocklists) {
       payload.privacy.blocklists = priv.blocklists.map((b: BlocklistEntry) => {
@@ -424,22 +393,8 @@ async function verifyClone(
   const sSec = src.security;
   const dSec = dst.security;
   if (sSec && dSec) {
-    const securityKeys: (keyof ProfileSecurity)[] = [
-      'threatIntelligenceFeeds',
-      'aiThreatDetection',
-      'googleSafeBrowsing',
-      'cryptojacking',
-      'dnsRebinding',
-      'idnHomographs',
-      'typosquatting',
-      'dga',
-      'nrd',
-      'ddns',
-      'parking',
-      'csam',
-    ];
-    for (const k of securityKeys) {
-      if (sSec[k] !== dSec[k]) {
+    for (const k of SECURITY_TOGGLE_FIELDS) {
+      if (sSec[k] !== undefined && sSec[k] !== dSec[k]) {
         mismatches.push(`Security '${k}': Source=${sSec[k]}, Dest=${dSec[k]}`);
       }
     }
@@ -459,8 +414,8 @@ async function verifyClone(
   const sPriv = src.privacy;
   const dPriv = dst.privacy;
   if (sPriv && dPriv) {
-    for (const k of ['disguisedTrackers', 'allowAffiliate'] as const) {
-      if (sPriv[k] !== dPriv[k]) {
+    for (const k of PRIVACY_TOGGLE_FIELDS) {
+      if (sPriv[k] !== undefined && sPriv[k] !== dPriv[k]) {
         mismatches.push(`Privacy '${k}': Source=${sPriv[k]}, Dest=${dPriv[k]}`);
       }
     }
